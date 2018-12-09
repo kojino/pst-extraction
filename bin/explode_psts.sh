@@ -3,13 +3,22 @@
 set +x
 set -e
 
-if [[ -d "pst-extract/mbox/" ]]; then
-    rm -rf "pst-extract/mbox/"
+START=$(date +%s)
+PST_PATH=$1
+PST_PREFIX=$2
+
+echo $PST_PATH
+echo $PST_PREFIX
+if [[ -d "${PST_PREFIX}/pst-extract/mbox/" ]]; then
+    rm -rf "${PST_PREFIX}/pst-extract/mbox/"
 fi
 
-mkdir "pst-extract/mbox/"
+mkdir -p "${PST_PREFIX}/pst-extract/mbox/"
 
-for f in pst-extract/pst/*.pst;
+for f in ${PST_PATH}/${PST_PREFIX}*.pst;
 do
-    readpst -r -j 8 -o pst-extract/mbox ${f};
+     time readpst -r -j 16 -o ${PST_PREFIX}/pst-extract/mbox ${f};
 done;
+END=$(date +%s)
+DIFF=$(( $END - $START ))
+echo "It took $DIFF seconds"
