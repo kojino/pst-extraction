@@ -20,7 +20,6 @@ dependencies:
 - libgcc-ng=8.2.0=hdf63c60_1
 - libstdcxx-ng=8.2.0=hdf63c60_1
 - ncurses=6.1=hf484d3e_0
-- openssl=1.1.1=h7b6447c_0
 - pip=18.1=py27_0
 - pycparser=2.19=py27_0
 - pyopenssl=18.0.0=py27_0
