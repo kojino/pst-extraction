@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import unicodedata
 import html
+from pyspark import SparkContext, SparkConf
 
 
 def split(txt, seps):
@@ -12,7 +13,8 @@ def split(txt, seps):
     return [i.strip() for i in txt.split(default_sep)]
 
 
-def remove_html(raw):
+def remove_html(doc_tuple):
+    doc_id, raw = doc_tuple
     soup = BeautifulSoup(
         raw, 'lxml')  # create a new bs4 object from the html data loaded
     for script in soup(["script",
@@ -29,7 +31,7 @@ def remove_html(raw):
     # encode html characters
     text = html.unescape(text)
     text = split(text, closings)[0]
-    return text
+    return (doc_id, text)
 
 
 if __name__ == "__main__":
@@ -39,19 +41,23 @@ if __name__ == "__main__":
         description=desc,
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=desc)
-    parser.add_argument("input_path_emails", help="directory with json emails")
+    parser.add_argument("input_path", help="directory with json texts")
     parser.add_argument(
-        "output_path_email_address",
-        help="output directory for spark results of json email address ")
+        "output_path",
+        help=
+        "output directory for spark results of json texts with html tags removed"
+    )
 
-    lex_date = datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S')
-    print "Running with json filter {}.".format("enabled" if args.
-                                                validate_json else "disabled")
-    # filter_fn = partial(valid_json_filter, os.path.basename(__file__),
-    #                     lex_date, not args.validate_json)
+    conf = SparkConf().setAppName("Html Tag Removal")
+    sc = SparkContext(conf=conf)
+    rdd = sc.textFile(args.input_path)
 
-    # conf = SparkConf().setAppName("Html Tag Removal")
-    # sc = SparkContext(conf=conf)
-    # rdd_raw_emails = sc.textFile(args.input_path_emails).cache()
-    # rdd_text = rdd_raw_emails.filter(filter_fn).flatMap(remove_html).cache()
-    # #rdd_addr_to_emails.saveAsTextFile(args.output_path_email_address)
+    def doc_to_tuple(sz):
+        j = json.loads(sz)
+        return (j.get('id'), j.get('body'))
+
+    cleandoc = rdd.map(doc_to_tuple).map(remove_html).cache()
+
+    output = cleandoc.map(lambda x: "{}\t{}".format(x[0], x[1]))
+
+    output.saveAsTextFile(args.output_path)
