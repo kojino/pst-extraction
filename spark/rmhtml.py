@@ -41,13 +41,13 @@ if __name__ == "__main__":
         description=desc,
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=desc)
-    parser.add_argument("input_path", help="directory with json texts")
-    parser.add_argument(
-        "output_path",
+    parser.add_argument("-i", "--input_path", help="directory with json texts")
+    parser.add_argument("-o",
+        "--output_path",
         help=
         "output directory for spark results of json texts with html tags removed"
     )
-
+    args = parser.parse_args()
     conf = SparkConf().setAppName("Html Tag Removal")
     sc = SparkContext(conf=conf)
     rdd = sc.textFile(args.input_path)
