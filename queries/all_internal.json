@@ -1,0 +1,63 @@
+POST _search
+{
+    "query": {
+        "must": [
+            "range": {
+                "datetime" {
+                    "gte": begin,
+                    "lte": end,
+                }
+            },
+            "should": [
+                "must": [
+                    "term": {
+                        "senders": owner_email
+                    }
+                    "terms": {
+                        "recipients": [
+                            owner_email,
+                            sales_email,
+                            pricing_email
+                        ]
+                    }
+                ],
+                "must": [
+                    "term": {
+                        "senders": owner_email
+                    }
+                    "terms": {
+                        "recipients": [
+                            bid_email,
+                            sales_email,
+                            pricing_email
+                        ]
+                    }
+                ],
+                "must": [
+                    "term": {
+                        "senders": sales_email
+                    }
+                    "terms": {
+                        "recipients": [
+                            bid_email,
+                            sales_email,
+                            pricing_email
+                        ]
+                    }
+                ],
+                "must": [
+                    "term": {
+                        "senders": pricing_email
+                    }
+                    "terms": {
+                        "recipients": [
+                            owner_email,
+                            sales_email,
+                            bid_email
+                        ]
+                    }
+                ]
+            ]
+        ]
+    }
+}

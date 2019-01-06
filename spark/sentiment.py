@@ -1,4 +1,5 @@
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
+import argparse
 
 
 def nltk_sentiment(doc_tuple):
@@ -15,15 +16,16 @@ if __name__ == "__main__":
         description=desc,
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=desc)
+    parser.add_argument("-i", "--input_path", help="directory with json texts")
     parser.add_argument(
-        "input_path", help="directory with html removed json texts")
-    parser.add_argument(
-        "output_path",
+        "-o",
+        "--output_path",
         help=
-        "output directory for spark results of sentiment scores (from -1 to 1)"
+        "output directory for spark results of json texts with html tags removed"
     )
+    args = parser.parse_args()
 
-    conf = SparkConf().setAppName("Html Tag Removal")
+    conf = SparkConf().setAppName("Sentiment Analysis")
     sc = SparkContext(conf=conf)
     rdd = sc.textFile(args.input_path)
 
