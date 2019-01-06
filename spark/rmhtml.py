@@ -2,7 +2,8 @@ from bs4 import BeautifulSoup
 import unicodedata
 import html
 from pyspark import SparkContext, SparkConf
-
+import argparse
+import json
 
 def split(txt, seps):
     default_sep = seps[0]
@@ -30,7 +31,7 @@ def remove_html(doc_tuple):
     text = unicodedata.normalize("NFKD", text)
     # encode html characters
     text = html.unescape(text)
-    text = split(text, closings)[0]
+    # text = split(text, closings)[0]
     return (doc_id, text)
 
 

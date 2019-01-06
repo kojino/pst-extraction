@@ -12,7 +12,7 @@ if [[ -d "pst-extract/$OUTPUT_DIR" ]]; then
     rm -rf "pst-extract/$OUTPUT_DIR"
 fi
 
-spark-submit --master local[*] --driver-memory 16g --conf spark.storage.memoryFraction=.8 --files spark/filter.py spark/rmhtml.py --input_path pst-extract/spark-emails-text --output_path pst-extract/$OUTPUT_DIR
+spark-submit --master local[*] --driver-memory 16g --conf spark.storage.memoryFraction=.8 --files spark/filters.py spark/rmhtml.py --input_path pst-extract/spark-emails-text --output_path pst-extract/$OUTPUT_DIR
 
 END=$(date +%s)
 DIFF=$(( $END - $START ))
