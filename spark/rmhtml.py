@@ -5,6 +5,53 @@ from pyspark import SparkContext, SparkConf
 import argparse
 import json
 
+closings = [
+    "Regards,",
+    "Best,",
+    "Thanks,",
+    "Sent from my iPhone",
+    "Sent from my ipad",
+    "Sent from my android",
+    "Sent from my mobile device",
+    "Sincerely,",
+    "Regards,",
+    "Yours truly,",
+    "Yours sincerely,",
+    "Best regards,",
+    "Cordially,",
+    "Yours respectfully",
+    "Warm regards,",
+    "Best wishes,",
+    "With appreciation,",
+    "Cordially yours,",
+    "Fond regards,",
+    "In appreciation,",
+    "In sympathy,",
+    "Kind regards,",
+    "Kind thanks,",
+    "Kind wishes,",
+    "Many thanks,",
+    "Regards,",
+    "Respectfully,",
+    "Respectfully yours,",
+    "Sincerely,",
+    "Sincerely yours,",
+    "Warm regards,",
+    "Warm wishes,",
+    "Warmly,",
+    "With appreciation,",
+    "With deepest sympathy,",
+    "With gratitude,",
+    "With sincere thanks,",
+    "With sympathy,",
+    "Your help is greatly appreciated,",
+    "Yours cordially,",
+    "Yours faithfully,",
+    "Yours sincerely,",
+    "Yours truly,",
+]
+
+
 def split(txt, seps):
     default_sep = seps[0]
 
@@ -31,8 +78,8 @@ def remove_html(doc_tuple):
     text = unicodedata.normalize("NFKD", text)
     # encode html characters
     text = html.unescape(text)
-    # text = split(text, closings)[0]
-    return (doc_id, text)
+    text = split(text, closings)[0]
+    return {'id': doc_id, 'body': text}
 
 
 if __name__ == "__main__":
@@ -43,7 +90,8 @@ if __name__ == "__main__":
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=desc)
     parser.add_argument("-i", "--input_path", help="directory with json texts")
-    parser.add_argument("-o",
+    parser.add_argument(
+        "-o",
         "--output_path",
         help=
         "output directory for spark results of json texts with html tags removed"
@@ -59,6 +107,6 @@ if __name__ == "__main__":
 
     cleandoc = rdd.map(doc_to_tuple).map(remove_html).cache()
 
-    output = cleandoc.map(lambda x: "{}\t{}".format(x[0], x[1]))
+    output = cleandoc.map(lambda x: json.dumps(x))
 
     output.saveAsTextFile(args.output_path)
