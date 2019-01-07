@@ -1,12 +1,15 @@
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import argparse
-
+import json
+from pyspark import SparkContext, SparkConf
+import nltk
+nltk.download('vader_lexicon')
 
 def nltk_sentiment(doc_tuple):
     doc_id, text = doc_tuple
     analyzer = SentimentIntensityAnalyzer()
     score = analyzer.polarity_scores(text)
-    return (doc_id, score['compound'])
+    return {'id':doc_id, 'compound_sentiment_score': score['compound'], 'pos_sentiment_score': score['pos'], 'neg_sentiment_score': score['neg'], 'neu_sentiment_score': score['neu'], 'body': text}
 
 
 if __name__ == "__main__":
@@ -35,6 +38,6 @@ if __name__ == "__main__":
 
     sentiments = rdd.map(doc_to_tuple).map(nltk_sentiment).cache()
 
-    output = sentiments.map(lambda x: "{}\t{}".format(x[0], str(x[1])))
+    output = sentiments.map(lambda x: json.dumps(x))
 
     output.saveAsTextFile(args.output_path)
