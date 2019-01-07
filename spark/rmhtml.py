@@ -51,7 +51,7 @@ closings = [
     "Yours truly,",
 ]
 
-closings = closings + [word.lower() for word in closings])
+closings = closings + [word.lower() for word in closings]
 
 
 def split(txt, seps):
