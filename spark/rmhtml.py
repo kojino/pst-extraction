@@ -49,6 +49,8 @@ closings = [
     "Yours faithfully",
     "Yours sincerely",
     "Yours truly",
+    "From:",
+    "Sent:"
 ]
 
 closings = closings + [word.lower() for word in closings]
