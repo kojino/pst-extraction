@@ -1,9 +1,12 @@
 import argparse
 import json
-from pyspark import SparkContext, SparkConf
-import tensorflow as tf
-import tensorflow_hub as hub
+
 import numpy as np
+import tensorflow as tf
+
+import partial
+import tensorflow_hub as hub
+from pyspark import SparkConf, SparkContext
 
 
 def sentence_embedding(sess, doc_tuple):
