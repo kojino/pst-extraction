@@ -1,63 +1,98 @@
-POST _search
 {
     "query": {
-        "must": [
-            "range": {
-                "datetime" {
-                    "gte": begin,
-                    "lte": end,
+        "bool": {
+            "must": [
+                {
+                    "range": {
+                        "datetime": {
+                            "gte": "2016-05-01T00:00:00",
+                            "lte": "2016-06-30T00:00:00"
+                        }
+                    }
+                },
+                {
+                    "bool": {
+                        "should": [
+                            {
+                                "bool": {
+                                    "must": [
+                                        {
+                                            "term": {
+                                                "senders": "ravindra.pant@tatacommunications.com"
+                                            }
+                                        },
+                                        {
+                                            "terms": {
+                                                "tos": [
+                                                    "purushotham.m@tatacommunications.com",
+                                                    "sumeet.rathi@tatacommunications.com"
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "bool": {
+                                    "must": [
+                                        {
+                                            "term": {
+                                                "senders": "ravindra.pant@tatacommunications.com"
+                                            }
+                                        },
+                                        {
+                                            "terms": {
+                                                "tos": [
+                                                    "purushotham.m@tatacommunications.com",
+                                                    "sumeet.rathi@tatacommunications.com"
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "bool": {
+                                    "must": [
+                                        {
+                                            "term": {
+                                                "senders": "ravindra.pant@tatacommunications.com"
+                                            }
+                                        },
+                                        {
+                                            "terms": {
+                                                "tos": [
+                                                    "purushotham.m@tatacommunications.com",
+                                                    "sumeet.rathi@tatacommunications.com"
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "bool": {
+                                    "must": [
+                                        {
+                                            "term": {
+                                                "senders": "ravindra.pant@tatacommunications.com"
+                                            }
+                                        },
+                                        {
+                                            "terms": {
+                                                "tos": [
+                                                    "purushotham.m@tatacommunications.com",
+                                                    "sumeet.rathi@tatacommunications.com"
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
                 }
-            },
-            "should": [
-                "must": [
-                    "term": {
-                        "senders": owner_email
-                    }
-                    "terms": {
-                        "recipients": [
-                            owner_email,
-                            sales_email,
-                            pricing_email
-                        ]
-                    }
-                ],
-                "must": [
-                    "term": {
-                        "senders": owner_email
-                    }
-                    "terms": {
-                        "recipients": [
-                            bid_email,
-                            sales_email,
-                            pricing_email
-                        ]
-                    }
-                ],
-                "must": [
-                    "term": {
-                        "senders": sales_email
-                    }
-                    "terms": {
-                        "recipients": [
-                            bid_email,
-                            sales_email,
-                            pricing_email
-                        ]
-                    }
-                ],
-                "must": [
-                    "term": {
-                        "senders": pricing_email
-                    }
-                    "terms": {
-                        "recipients": [
-                            owner_email,
-                            sales_email,
-                            bid_email
-                        ]
-                    }
-                ]
             ]
-        ]
+        }
     }
 }
