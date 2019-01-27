@@ -1,1 +1,139 @@
-curl -XGET -H "Content-Type:application/json" http://10.31.9.77:9200/_search -d '@all_internal.json' 
+curl -XGET -H "Content-Type:application/json" http://10.31.9.77:9200/_search -d '
+{
+    "query": {
+        "bool": {
+            "must": [
+                {
+                    // Email sent date is between opportunity created date and opportunity closed date
+                    "range": {
+                        "datetime": {
+                            "gte": "2016-05-01T00:00:00", // created date
+                            "lte": "2016-06-30T00:00:00" // closed date
+                        }
+                    }
+                },
+                {
+                    "bool": {
+                        "should": [
+                            {
+                                // Sender = opportunity bid manager AND recipient = (opportunity owner OR Opportunity pre-sales manager OR Opportunity pricing manager)
+                                "bool": {
+                                    "must": [
+                                        {
+                                            "term": {
+                                                "senders": "ravindra.pant@tatacommunications.com" // opportunity bid manager
+                                            }
+                                        },
+                                        {
+                                            "terms": {
+                                                "tos": [
+                                                    "purushotham.m@tatacommunications.com", // opportunity owner
+                                                    "sumeet.rathi@tatacommunications.com", // pre-sales manager 
+                                                    "sumeet.rathi@tatacommunications.com" // pricing manager
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                // Sender = opportunity owner AND recipient = (opportunity bid manager AND (opportunity pre-sales manager OR opportunity pricing manager))
+                                "bool": {
+                                    "must": [
+                                        {
+                                            "term": {
+                                                "senders": "ravindra.pant@tatacommunications.com" // opportunity owner
+                                            }
+                                        },
+                                        {
+                                            "bool": {
+                                                "must": [
+                                                    {
+                                                        "term": {
+                                                            "tos": "purushotham.m@tatacommunications.com" // bid manager
+                                                        }
+                                                    },
+                                                    {
+                                                        "terms": {
+                                                            "tos": [
+                                                                "purushotham.m@tatacommunications.com", // pre-sales manager
+                                                                "purushotham.m@tatacommunications.com" // pricing manager
+                                                            ]
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                // Sender = opportunity pre-sales manager AND recipient = (opportunity bid manager AND (opportunity owner OR opportunity pricing manager))
+                                "bool": {
+                                    "must": [
+                                        {
+                                            "term": {
+                                                "senders": "ravindra.pant@tatacommunications.com" // pre-sales manager
+                                            }
+                                        },
+                                        {
+                                            "bool": {
+                                                "must": [
+                                                    {
+                                                        "term": {
+                                                            "tos": "purushotham.m@tatacommunications.com" // bid manager
+                                                        }
+                                                    },
+                                                    {
+                                                        "terms": {
+                                                            "tos": [
+                                                                "purushotham.m@tatacommunications.com", // opportunity owner
+                                                                "purushotham.m@tatacommunications.com" // pricing manager
+                                                            ]
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                // Sender = opportunity pricing manager AND recipient = (opportunity bid manager AND (opportunity owner OR opportunity pre-sales manager)))
+                                "bool": {
+                                    "must": [
+                                        {
+                                            "term": {
+                                                "senders": "ravindra.pant@tatacommunications.com" // pricing manager
+                                            }
+                                        },
+                                        {
+                                            "bool": {
+                                                "must": [
+                                                    {
+                                                        "term": {
+                                                            "tos": "purushotham.m@tatacommunications.com" // bid manager
+                                                        }
+                                                    },
+                                                    {
+                                                        "terms": {
+                                                            "tos": [
+                                                                "purushotham.m@tatacommunications.com", // opportunity owner
+                                                                "purushotham.m@tatacommunications.com" // pre-sales manager
+                                                            ]
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    }
+}
+' 
