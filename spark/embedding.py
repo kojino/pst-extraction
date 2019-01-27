@@ -9,9 +9,7 @@ import tensorflow_hub as hub
 from pyspark import SparkConf, SparkContext
 
 
-def sentence_embedding(doc_tuple):
-    sess = tf.Session()
-    sess.run([tf.global_variables_initializer(), tf.tables_initializer()])
+def sentence_embedding(sess, doc_tuple):
     doc_id, text = doc_tuple
     paragraph = (text)
     messages = [paragraph]
@@ -53,8 +51,11 @@ if __name__ == "__main__":
     # Import the Universal Sentence Encoder's TF Hub module
     embed = hub.Module(module_url)
     tf.logging.set_verbosity(tf.logging.ERROR)
+    sess = tf.Session()
+    sess.run([tf.global_variables_initializer(), tf.tables_initializer()])
 
-    embeddings = rdd.map(doc_to_tuple).map(sentence_embedding).cache()
+    sentence_embedding_partial = partial(sentence_embedding, sess)
+    embeddings = rdd.map(doc_to_tuple).map(sentence_embedding_partial).cache()
 
     output = embeddings.map(lambda x: json.dumps(x))
 
