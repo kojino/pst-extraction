@@ -4,7 +4,7 @@ import json
 import numpy as np
 import tensorflow as tf
 
-import partial
+from functools import partial
 import tensorflow_hub as hub
 from pyspark import SparkConf, SparkContext
 
