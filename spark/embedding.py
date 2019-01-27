@@ -16,7 +16,11 @@ def sentence_embedding(sess, doc_tuple):
     # Reduce logging output.
     message_embedding = sess.run(embed([paragraph]))[0, :].tolist()
 
-    return {'id': doc_id, 'body': text, 'embedding': message_embedding}
+    return {
+        'id': doc_id,
+        'body': text,
+        'embedding': ','.join(message_embedding)
+    }
 
 
 if __name__ == "__main__":
