@@ -61,10 +61,10 @@ if __name__ == "__main__":
     parser.add_argument("-v", "--validate_json", action="store_true", help="Filter broken json.  Test each json object and output broken objects to tmp/failed.")
 
     args = parser.parse_args()
-    print "INFO: docex_mode ",args.docex_mode
+    print ("INFO: docex_mode ",args.docex_mode)
 
     lex_date = datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S')
-    print "INFO: Running with json filter {}.".format("enabled" if args.validate_json else "disabled")
+    print ("INFO: Running with json filter {}.".format("enabled" if args.validate_json else "disabled"))	
     filter_fn = partial(valid_json_filter, os.path.basename(__file__), lex_date, not args.validate_json)
 
     conf = SparkConf().setAppName("Newman join attachments content")
@@ -75,7 +75,7 @@ if __name__ == "__main__":
     # Join each of the content rdds to the email rdd
     # TODO fix this iteration - maybe key field is not correct once it joins?
     for input_path in args.attach_input.split(","):
-        print "===============================joining datasets: {}".format(input_path)
+        print ("===============================joining datasets: {}".format(input_path))
         rdd_extracted_content = sc.textFile(input_path).map(lambda doc : fn_attach_array(filter_fn, doc)).keyBy(lambda x: x['id'])
         rdd_joined = rdd_emails.leftOuterJoin(rdd_extracted_content).map(lambda x: fn_join_contents(x, args.docex_mode))
 

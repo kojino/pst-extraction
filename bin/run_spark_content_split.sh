@@ -14,15 +14,15 @@ INPUT_DIR=spark-emails-attach
 # Changed for testing
 #INPUT_DIR=spark-emails-attach-exif
 OUTPUT_DIR=spark-emails-text
-if [[ -d "pst-extract/${PST_PREFIX}/$OUTPUT_DIR" ]]; then
-    rm -rf "pst-extract/${PST_PREFIX}/$OUTPUT_DIR"
+if [[ -d "pst-extract/$OUTPUT_DIR/${PST_PREFIX}" ]]; then
+    rm -rf "pst-extract/$OUTPUT_DIR/${PST_PREFIX}"
 fi
 OUTPUT_DIR2=spark-emails-attachments
-if [[ -d "pst-extract/${PST_PREFIX}/$OUTPUT_DIR2" ]]; then
-    rm -rf "pst-extract/${PST_PREFIX}/$OUTPUT_DIR2"
+if [[ -d "pst-extract/$OUTPUT_DIR2/${PST_PREFIX}" ]]; then
+    rm -rf "pst-extract/$OUTPUT_DIR2/${PST_PREFIX}"
 fi
 
-spark-submit --master local[*] --driver-memory 8g --conf spark.storage.memoryFraction=.8 --files spark/filters.py spark/attachment_split.py pst-extract/${PST_PREFIX}/${INPUT_DIR} pst-extract/${PST_PREFIX}/$OUTPUT_DIR  pst-extract/${PST_PREFIX}/${OUTPUT_DIR2} ${FLAG_VALIDATE_JSON}
+spark-submit --master local[*] --driver-memory 16g --conf spark.storage.memoryFraction=.8 --files spark/filters.py spark/attachment_split.py pst-extract/${INPUT_DIR}/${PST_PREFIX} pst-extract/$OUTPUT_DIR/${PST_PREFIX}  pst-extract/${OUTPUT_DIR2}/${PST_PREFIX} ${FLAG_VALIDATE_JSON}
 
 #./bin/validate_lfs.sh $OUTPUT_DIR
 END=$(date +%s)

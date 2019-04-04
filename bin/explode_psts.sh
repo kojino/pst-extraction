@@ -9,15 +9,15 @@ PST_PREFIX=$2
 
 echo $PST_PATH
 echo $PST_PREFIX
-if [[ -d "${PST_PREFIX}/pst-extract/mbox/" ]]; then
-    rm -rf "${PST_PREFIX}/pst-extract/mbox/"
+if [[ -d "pst-extract/mbox/${PST_PREFIX}" ]]; then
+    rm -rf "pst-extract/mbox/${PST_PREFIX}"
 fi
 
-mkdir -p "${PST_PREFIX}/pst-extract/mbox/"
+mkdir -p "pst-extract/mbox/${PST_PREFIX}"
 
 for f in ${PST_PATH}/${PST_PREFIX}*.pst;
 do
-     time readpst -r -j 16 -o ${PST_PREFIX}/pst-extract/mbox ${f};
+     time readpst -r -j 16 -o pst-extract/mbox/${PST_PREFIX} ${f};
 done;
 END=$(date +%s)
 DIFF=$(( $END - $START ))

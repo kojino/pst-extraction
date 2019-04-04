@@ -16,23 +16,23 @@ FLAGS_VALIDATE_JSON=$2
 FLAGS_DOCEX_MODE=$3 
 echo "mode=$RUN_FLAGS"
 
-INPUT_RIGHT_SIDE_DIRS=pst-extract/${PST_PREFIX}/spark-attach/
+INPUT_RIGHT_SIDE_DIRS=pst-extract/spark-attach/${PST_PREFIX}
 #,pst-extract/ocr_output/
 OUTPUT_DIR=spark-emails-attach
-if [[ -d "pst-extract/${PST_PREFIX}/$OUTPUT_DIR" ]]; then
-    rm -rf "pst-extract/$OUTPUT_DIR"
+if [[ -d "pst-extract/$OUTPUT_DIR/${PST_PREFIX}" ]]; then
+    rm -rf "pst-extract/$OUTPUT_DIR/${PST_PREFIX}"
 fi
 #OUTPUT_DIR2=spark-emails-attach-classification
-#if [[ -d "pst-extract/${PST_PREFIX}/$OUTPUT_DIR2" ]]; then
-#    rm -rf "pst-extract/$OUTPUT_DIR2"
+#if [[ -d "pst-extract/$OUTPUT_DIR2/${PST_PREFIX}" ]]; then
+#    rm -rf "pst-extract/$OUTPUT_DIR2/${PST_PREFIX}"
 #fi
 
 #OUTPUT_DIR_FINAL=spark-emails-attach
-#if [[ -d "pst-extract/${PST_PREFIX}/$OUTPUT_DIR_FINAL" ]]; then
-#    rm -rf "pst-extract/${PST_PREFIX}/$OUTPUT_DIR_FINAL"
+#if [[ -d "pst-extract/$OUTPUT_DIR_FINAL/${PST_PREFIX}" ]]; then
+#    rm -rf "pst-extract/$OUTPUT_DIR_FINAL/${PST_PREFIX}"
 #fi
 
-spark-submit --master local[*] --driver-memory 16g --conf spark.storage.memoryFraction=.8 --files spark/filters.py spark/attachment_join.py pst-extract/${PST_PREFIX}/pst-json/ $INPUT_RIGHT_SIDE_DIRS pst-extract/${PST_PREFIX}/$OUTPUT_DIR $FLAGS_VALIDATE_JSON $FLAGS_DOCEX_MODE
+spark-submit --master local[*] --driver-memory 32g --conf spark.storage.memoryFraction=.8 --files spark/filters.py spark/attachment_join.py pst-extract/pst-json/${PST_PREFIX}/ $INPUT_RIGHT_SIDE_DIRS pst-extract/$OUTPUT_DIR/${PST_PREFIX} $FLAGS_VALIDATE_JSON $FLAGS_DOCEX_MODE
 #./bin/validate_lfs.sh $OUTPUT_DIR
 
 # TODO:Image classification module need to be downloaded. See bin/run_human_receipt_detection_harness.sh
@@ -46,4 +46,3 @@ spark-submit --master local[*] --driver-memory 16g --conf spark.storage.memoryFr
 END=$(date +%s)
 DIFF=$(( $END - $START ))
 echo "It took $DIFF seconds"
-

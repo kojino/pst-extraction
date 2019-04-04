@@ -21,7 +21,7 @@ def extractKeys(keys, o):
     return rtn
 
 def removeAttachments(x):
-    x['attachments'] = map(lambda o: rmkey('contents64', o), x['attachments'])
+    x['attachments'] = list(map(lambda o: rmkey('contents64', o), x['attachments']))
     return x
 
 def extractAttachments(x):
@@ -34,7 +34,7 @@ def extractAttachments(x):
         "label" : x["label"],
         "original_artifact" : x["original_artifact"]
     }
-    attachments = map(lambda o: extractKeys([
+    attachments = list(map(lambda o: extractKeys([
         'guid',
         'extension',
         'filename',
@@ -50,7 +50,7 @@ def extractAttachments(x):
         'image_analytics',
         'metadata',
         'size'
-    ], o), x['attachments'])
+    ], o), x['attachments']))
     attachments = [dict(a, **parent_fields) for a in attachments]
     return attachments
 
@@ -73,7 +73,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     lex_date = datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S')
-    print "INFO: Running with json filter {}.".format("enabled" if args.validate_json else "disabled")
+    print ("INFO: Running with json filter {}.".format("enabled" if args.validate_json else "disabled"))
     filter_fn = partial(valid_json_filter, os.path.basename(__file__), lex_date, not args.validate_json)
 
     conf = SparkConf().setAppName("Newman split attachments and emails")
