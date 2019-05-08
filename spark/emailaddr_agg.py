@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 import json
 import argparse
-import igraph
+#import igraph
 import os
 import datetime
 from filters import valid_json_filter
 from functools import partial
+from functools import reduce
 from pyspark import SparkContext, SparkConf
 
 #utils
@@ -71,8 +72,8 @@ def in_out(t):
     attachments = reduce(lambda a,b: a+b.get('attachments',[]), sender_emails, [])
     return {'addr' : addr,
             'sender_attachments' : attachments,
-            'sender' : map(lambda x: rmkeys(['addr', 'type', 'attachments'], x), sender_emails), 
-            'recepient': map(lambda x: rmkeys(['addr', 'type', 'attachments'], x), recepient_emails)}
+            'sender' : list(map(lambda x: rmkeys(['addr', 'type', 'attachments'], x), sender_emails)), 
+            'recepient': list(map(lambda x: rmkeys(['addr', 'type', 'attachments'], x), recepient_emails))}
 
 def sender_receiver(o):
     j = json.loads(o)
@@ -102,7 +103,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     lex_date = datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S')
-    print "Running with json filter {}.".format("enabled" if args.validate_json else "disabled")
+    print ("Running with json filter {}.".format("enabled" if args.validate_json else "disabled"))
     filter_fn = partial(valid_json_filter, os.path.basename(__file__), lex_date, not args.validate_json)
 
 
@@ -120,19 +121,19 @@ if __name__ == "__main__":
     nodes_idx = map(lambda x: {'addr' : x, 'idx': node_map[x], 'community': 'n/a'}, nodes)
     edges = rdd_edges.map(lambda x: (broadcast_node_map.value[x[0]], broadcast_node_map.value[x[1]])).collect()
 
-    g = igraph.Graph(len(nodes)+1)
-    g.add_edges(edges)
-    g.vs['node'] = nodes_idx
+    #g = igraph.Graph(len(nodes)+1)
+    #g.add_edges(edges)
+    #g.vs['node'] = nodes_idx
 
-    g = g.as_undirected(mode='collapse')
-    clustering = g.community_multilevel()
+    #g = g.as_undirected(mode='collapse')
+    #clustering = g.community_multilevel()
 
-    for subgraph in clustering.subgraphs():
-        #pick name of first node for community
-        community_name = subgraph.vs['node'][0]['addr']
-        for node in subgraph.vs['node']:
-            node['community'] = community_name
-            node['community_id'] = node_map[community_name]
+    #for subgraph in clustering.subgraphs():
+    #    #pick name of first node for community
+    #    community_name = subgraph.vs['node'][0]['addr']
+    #    for node in subgraph.vs['node']:
+    #        node['community'] = community_name
+    #        node['community_id'] = node_map[community_name]
 
     #{'community': u'', 'addr': u'', 'idx': 423, 'community_id': 4}
     rdd_communities = sc.parallelize(nodes_idx).keyBy(lambda x: x['addr'])
@@ -144,9 +145,9 @@ if __name__ == "__main__":
             except ValueError:
                 return default
                     
-        o['sent_count'] = len(o.get('sender', []))
-        o['received_count'] = len(o.get('recepient', []))
-        o['attachments_count'] = len(o.get('sender_attachments', []))
+        o['sent_count'] = len(list(o.get('sender', [])))
+        o['received_count'] = len(list(o.get('recepient', [])))
+        o['attachments_count'] = len(list(o.get('sender_attachments', [])))
         o['first_sent'] = apply_filter_map(o.get('sender', []), min, identity, lambda x: x.get('datetime', None))
         o['first_received'] = apply_filter_map(o.get('recepient', []), min, identity, lambda x: x.get('datetime', None))
         o['last_received'] =  apply_filter_map(o.get('recepient', []), max, identity, lambda x: x.get('datetime', None))
@@ -165,4 +166,4 @@ if __name__ == "__main__":
     
     rdd_communities_assigned.map(dump).saveAsTextFile(args.output_path_email_address)
 
-    print "complete."
+    print ("complete.")

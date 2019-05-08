@@ -14,11 +14,11 @@ LABEL=$5
 JSON_VALIDATION_FLAG=$6
 
 OUTPUT_DIR=spark-emailaddr
-if [[ -d "pst-extract/${PST_PREFIX}/$OUTPUT_DIR" ]]; then
-    rm -rf "pst-extract/${PST_PREFIX}/$OUTPUT_DIR"
+if [[ -d "pst-extract/$OUTPUT_DIR/${PST_PREFIX}" ]]; then
+    rm -rf "pst-extract/$OUTPUT_DIR/${PST_PREFIX}"
 fi
 
-spark-submit --master local[*] --driver-memory 16g --conf spark.storage.memoryFraction=.8 --files spark/filters.py spark/emailaddr_agg.py pst-extract/spark-emails-text pst-extract/${PST_PREFIX}/$OUTPUT_DIR --ingest_id $INGEST_ID --case_id $CASE_ID --alt_ref_id $ALTERNATE_ID --label $LABEL $JSON_VALIDATION_FLAG
+spark-submit --master local[*] --driver-memory 32g --conf spark.storage.memoryFraction=.8 --files spark/filters.py spark/emailaddr_agg.py pst-extract/spark-emails-text/${PST_PREFIX} pst-extract/$OUTPUT_DIR/${PST_PREFIX} --ingest_id $INGEST_ID --case_id $CASE_ID --alt_ref_id $ALTERNATE_ID --label $LABEL $JSON_VALIDATION_FLAG
 
 END=$(date +%s)
 DIFF=$(( $END - $START ))
