@@ -8,9 +8,9 @@ START=$(date +%s)
 
 PST_PREFIX=$1
 INGEST_ID=$2
-CASE_ID=$3
-ALTERNATE_ID=$4
-LABEL=$5
+CASE_ID=$2
+ALTERNATE_ID=$2
+LABEL=$3
 
 if [[ -d "pst-extract/pst-json/${PST_PREFIX}" ]]; then
     rm -rf "pst-extract/pst-json/${PST_PREFIX}"
