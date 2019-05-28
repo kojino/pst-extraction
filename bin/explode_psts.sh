@@ -17,7 +17,7 @@ mkdir -p "pst-extract/mbox/${PST_PREFIX}"
 
 for f in ${PST_PATH}/${PST_PREFIX}*.pst;
 do
-     time readpst -r -j 32 -o pst-extract/mbox/${PST_PREFIX} ${f};
+     time readpst -r -j 16 -o pst-extract/mbox/${PST_PREFIX} ${f};
      rm -rf ${f}	
 done;
 END=$(date +%s)

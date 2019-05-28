@@ -15,7 +15,7 @@ echo "Processing >>>>>>>>" $LINE
 
 ./bin/explode_psts.sh $PST_LOCATION $LINE
 
-./bin/normalize_mbox.sh $LINE '$LINE@@tatacommunications.com' TopofInformationStore Inbox
+#./bin/normalize_mbox.sh $LINE '$LINE@@tatacommunications.com' TopofInformationStore Inbox
 
 #./bin/run_spark_tika_scala.sh ${PST_PREFIX}
 
